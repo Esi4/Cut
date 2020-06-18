@@ -18,17 +18,18 @@ class CutTest {
 
     @Test
     void File() throws IOException {
-        Cut.main(new String[]{"-w", "-o", outputFile.toString(), "1-2", inputFile.toString()});
+        Cut.main(new String[]{"-w", "-o", outputFile.toString(), "1-4", inputFile.toString()});
         BufferedReader reader = new BufferedReader(new FileReader(outputFile.toString()));
         String x = reader.readLine();
-        assertEquals("Я кричал - вы что там", x);
+        assertEquals("Я кричал - вы ", x);
         x = reader.readLine();
-        assertEquals("Что ж вы уронили шахматный", x);
+        assertEquals("Что ж вы уронили ", x);
         x = reader.readLine();
-        assertEquals("А мне сказали в нашем", x);
+        assertEquals("А мне сказали в ", x);
         x = reader.readLine();
-        assertEquals("Вот, говорят, прекрасно, ты и", x);
+        assertEquals("Вот, говорят, прекрасно, ты ", x);
         reader.close();
+
     }
 
     @Test
@@ -38,7 +39,7 @@ class CutTest {
         ByteArrayInputStream input = new ByteArrayInputStream(("Внимание внимание" + ls +
                 "а я вас вижу" + ls + "/stop").getBytes());
         System.setIn(input);
-        Cut.main(new String[]{"-c", "1-5"});
+        Cut.main(new String[]{"-c", "1-2"});
         assertEquals("ниман" + ls + " я ва" + ls, baos.toString());
         System.setIn(System.in);
         System.setOut(System.out);
@@ -48,7 +49,7 @@ class CutTest {
     void error() throws IOException {
         PrintStream output = new PrintStream(baos);
         System.setErr(output);
-        Cut.main(new String[]{"-c", "-r", "-2-"});
+        Cut.main(new String[]{"-w", "-o", outputFile.toString(), "1---4", inputFile.toString()});
         assertEquals("Invalid water format. The correct format is number-number or -number, number-." + ls, baos.toString());
     }
 }

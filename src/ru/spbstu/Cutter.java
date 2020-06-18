@@ -21,7 +21,8 @@ public class Cutter {
             int min = Math.min(end, array.length);
             if (start <= x) {
                 for (int j = start - 1; j < min; j++) {
-                    str.append(array[j]).append(" ");
+                    str.append(array[j]);
+                    str.append("  ");
                     str.deleteCharAt(str.length() - 1);
                 }
             }

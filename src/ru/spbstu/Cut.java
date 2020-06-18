@@ -50,7 +50,8 @@ public class Cut {
             return;
         }
 
-        if (!range.matches("^(\\d*)-(\\d*)$")) {
+
+        if (!range.matches("^(\\d*-\\d*)|(\\d*-)|(-\\d*)$")) {
             System.err.println("Invalid water format. The correct format is number-number or -number, number-.");
             return;
         }
@@ -75,7 +76,7 @@ public class Cut {
         if(inputFile != null ) {
             try (BufferedReader read = new BufferedReader(new FileReader(inputFile))) {
                 line = read.readLine();
-                while (line.equals("")) {
+                while (!line.equals("")) {
                     list.add(line);
                     line = read.readLine();
                 }
