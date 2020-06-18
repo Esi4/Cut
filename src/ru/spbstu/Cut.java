@@ -103,9 +103,10 @@ public class Cut {
                  for (int j = 0; j < x - 1; j++) {
                      write.write(list.get(j) + System.lineSeparator());
                  }
-                 if (x > 0) {
-                     write.write(list.get(x -1));
-                 }
+             }
+         } else {
+             for (int j = 0; j <= list.size() - 1; j++) {
+                 System.out.println(list.get(j));
              }
          }
     }
