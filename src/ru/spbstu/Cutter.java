@@ -30,6 +30,7 @@ public class Cutter {
             str = new StringBuilder();
         }
         return res;
+
     }
 
     public List<String> chars(List<String> list) {
