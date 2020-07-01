@@ -14,16 +14,16 @@ public class Cut {
     @Option(name = "-o", metaVar = "OutputName", usage = "OutputName")
     private File outputFile;
 
-    @Option(name = "-w", metaVar = "IndentWords", usage = "Indent parameter in words", forbids = {"-c"})
+    @Option(name = "-w", metaVar = "IndentWords", usage = "Indent parameter inputtext words", forbids = {"-c"})
     private boolean words;
 
-    @Option(name = "-c", metaVar = "IndentChars", usage = "Indent parameter in chars", forbids = {"-w"})
+    @Option(name = "-c", metaVar = "IndentChars", usage = "Indent parameter inputtext chars", forbids = {"-w"})
     private boolean chars;
 
-    @Argument(required = true, metaVar = "Range", usage = "Spacing between words or characters")
+    @Option(name = "-r", required = true, metaVar = "Range", usage = "Spacing between words or characters")
     private String range;
 
-    @Argument(metaVar = "InputName", index = 1, usage = "InputName")
+    @Argument(metaVar = "InputName", usage = "InputName")
     private File inputFile;
 
     public static void main(String[] args) throws IOException {
@@ -31,8 +31,8 @@ public class Cut {
     }
 
     private void launch(String[] args) throws IOException {
-        int start;
-        int end = Integer.MAX_VALUE;
+        int start = 0;
+        int end = 0;
 
         CmdLineParser parser = new CmdLineParser(this);
 
@@ -40,7 +40,7 @@ public class Cut {
             parser.parseArgument(args);
         } catch (CmdLineException e) {
             System.err.println(e.getMessage());
-            System.err.println(" cut [-c | -w] [-o] [InputName] range");
+            System.err.println("cut [-c | -w] [-o] [InputName] range");
             parser.printUsage(System.err);
             return;
         }
@@ -57,12 +57,14 @@ public class Cut {
         }
 
         String[] split = range.split("-");
-        if (split[0].equals("")) {
+         if (split[0].equals("")) {
             start = 0;
-        } else if (split.length == 2) {
+        } else if (split.length == 1) {
             start = Integer.parseInt(split[0]);
+            end = Integer.MAX_VALUE;
+        } else {
             end = Integer.parseInt(split[1]);
-        } else start = Integer.parseInt(split[0]);
+        }
 
         if (start > end) {
             System.err.print("Start value is greater than the end");
@@ -70,44 +72,23 @@ public class Cut {
         }
 
         Cutter cutter = new Cutter(start, end);
-        String line;
-        List<String> list = new ArrayList<>();
 
-        if(inputFile != null ) {
-            try (BufferedReader read = new BufferedReader(new FileReader(inputFile))) {
-                line = read.readLine();
-                while (!line.equals("")) {
-                    list.add(line);
-                    line = read.readLine();
-                }
-            }
+        BufferedWriter write;
+        BufferedReader read;
+        try {
+            if (inputFile != null) {
+                read = new BufferedReader((new FileReader(inputFile)));
+            } else read = new BufferedReader(new InputStreamReader(System.in));
+
+            if (outputFile != null) {
+                write = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFile)));
+            } else write = new BufferedWriter(new OutputStreamWriter(System.out));
+
+            cutter.distribution(write, read, words);
+            write.close();
         }
-         else {
-             Scanner scan = new Scanner(System.in);
-             line = scan.nextLine();
-             while (!line.equals("/stop")) {
-                    list.add(line);
-                    line = scan.nextLine();
-             }
-         }
-
-         if(words) {
-             list = cutter.words(list);
-         } else {
-             list = cutter.chars(list);
-         }
-
-         if (outputFile != null) {
-             int x = list.size();
-             try (BufferedWriter write = new BufferedWriter((new FileWriter(outputFile)))) {
-                 for (int j = 0; j < x - 1; j++) {
-                     write.write(list.get(j) + System.lineSeparator());
-                 }
-             }
-         } else {
-             for (int j = 0; j <= list.size() - 1; j++) {
-                 System.out.println(list.get(j));
-             }
-         }
+        catch (IOException e) {
+            System.err.println(e.getMessage());
+        }
     }
 }
